@@ -5,6 +5,7 @@ const server = require("./server");
 const knex = require("../data/dbConfig")
 
 beforeAll(async () => {
+  await knex.migrate.up()
   await knex.seed.run()
 })
 
