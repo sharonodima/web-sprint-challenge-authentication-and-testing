@@ -1,7 +1,9 @@
 const router = require('express').Router();
+const knex = require("../../data/dbConfig");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken")
 
-router.post('/register', (req, res) => {
-  res.end('implement register, please!');
+router.post('/register', async (req, res) => {
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
@@ -27,10 +29,29 @@ router.post('/register', (req, res) => {
     4- On FAILED registration due to the `username` being taken,
       the response body should include a string exactly as follows: "username taken".
   */
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res.send("username and password required");
+  }
+  const existingUser = await knex("users").select().where({
+    username: username
+  });
+  if (existingUser.length > 0) {
+    return res.send("username taken");
+  }
+  const hashedPassword = bcrypt.hashSync(password, 8);
+  const newUser = await knex("users").insert({
+    username: username,
+    password: hashedPassword
+  });
+  res.json({
+    id: newUser[0],
+    username: username,
+    password: hashedPassword
+  });
 });
 
-router.post('/login', (req, res) => {
-  res.end('implement login, please!');
+router.post('/login', async (req, res) => {
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
@@ -54,6 +75,23 @@ router.post('/login', (req, res) => {
     4- On FAILED login due to `username` not existing in the db, or `password` being incorrect,
       the response body should include a string exactly as follows: "invalid credentials".
   */
+
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res.send("username and password required");
+  }
+  const existingUser = await knex("users").first().where({
+    username: username
+  });
+  if (!existingUser || !bcrypt.compareSync(password, existingUser.password)) {
+    return res.send("invalid credentials");
+  }
+  res.json({
+    message: `welcome, ${username}`,
+    token: jwt.sign({
+      id: existingUser.id
+    }, "secret")
+  });
 });
 
 module.exports = router;
