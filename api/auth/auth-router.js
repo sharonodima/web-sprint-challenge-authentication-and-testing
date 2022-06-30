@@ -29,6 +29,7 @@ router.post('/register', async (req, res) => {
     4- On FAILED registration due to the `username` being taken,
       the response body should include a string exactly as follows: "username taken".
   */
+ console.log("hi")
   const { username, password } = req.body;
   if (!username || !password) {
     return res.status(400).end("username and password required");
@@ -37,6 +38,7 @@ router.post('/register', async (req, res) => {
     username: username
   });
   if (existingUser.length > 0) {
+    console.log(username)
     return res.status(400).end("username taken");
   }
   const hashedPassword = bcrypt.hashSync(password, 8);
