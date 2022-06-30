@@ -15,19 +15,19 @@ module.exports = async (req, res, next) => {
   */
   const token = req.get("Authorization");
   if (!token) {
-    return res.send("token required");
+    return res.status(400).send("token required");
   }
   try {
     const decodedToken = jwt.verify(token, "secret");
-    console.log(decodedToken);
+  
     const existingUser = await knex("users").select().where({
       id: decodedToken.id
     });
     if (existingUser.length === 0) {
-      return res.send("token invalid");
+      return res.status(403).send("token invalid");
     }
   } catch (error) {
-    return res.send("token invalid");
+    return res.status(403).send("token invalid");
   }
   next();
 };
