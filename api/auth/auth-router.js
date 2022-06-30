@@ -31,13 +31,13 @@ router.post('/register', async (req, res) => {
   */
   const { username, password } = req.body;
   if (!username || !password) {
-    return res.status(400).send("username and password required");
+    return res.status(400).end("username and password required");
   }
   const existingUser = await knex("users").select().where({
     username: username
   });
   if (existingUser.length > 0) {
-    return res.status(400).send("username taken");
+    return res.status(400).end("username taken");
   }
   const hashedPassword = bcrypt.hashSync(password, 8);
   const newUser = await knex("users").insert({
@@ -78,13 +78,13 @@ router.post('/login', async (req, res) => {
 
   const { username, password } = req.body;
   if (!username || !password) {
-    return res.status(400).send("username and password required");
+    return res.status(400).end("username and password required");
   }
   const existingUser = await knex("users").first().where({
     username: username
   });
   if (!existingUser || !bcrypt.compareSync(password, existingUser.password)) {
-    return res.status(400).send("invalid credentials");
+    return res.status(400).end("invalid credentials");
   }
   res.json({
     message: `welcome, ${username}`,
