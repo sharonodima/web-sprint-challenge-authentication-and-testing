@@ -30,6 +30,7 @@ describe("Register", () => {
     })
       .expect(400)
       .then(response => {
+        console.log(response.body)
         assert(response.body, 'username taken');
         done();
       });

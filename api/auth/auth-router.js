@@ -32,7 +32,9 @@ router.post('/register', async (req, res) => {
  console.log("hi")
   const { username, password } = req.body;
   if (!username || !password) {
-    return res.status(400).end("username and password required");
+    return res.status(400).json({
+      message: "username and password required"
+    });
   }
   const existingUser = await knex("users").select().where({
     username: username
@@ -82,13 +84,17 @@ router.post('/login', async (req, res) => {
 
   const { username, password } = req.body;
   if (!username || !password) {
-    return res.status(400).end("username and password required");
+    return res.status(400).json({
+      message: "username and password required"
+    });
   }
   const existingUser = await knex("users").first().where({
     username: username
   });
   if (!existingUser || !bcrypt.compareSync(password, existingUser.password)) {
-    return res.status(400).end("invalid credentials");
+    return res.status(400).json({
+      message: "invalid credentials"
+    });
   }
   res.json({
     message: `welcome, ${username}`,

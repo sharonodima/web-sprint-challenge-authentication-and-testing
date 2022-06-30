@@ -15,7 +15,9 @@ module.exports = async (req, res, next) => {
   */
   const token = req.get("Authorization");
   if (!token) {
-    return res.status(400).send("token required");
+    return res.status(400).json({
+      message: "token required"
+    });
   }
   try {
     const decodedToken = jwt.verify(token, "secret");
@@ -24,10 +26,14 @@ module.exports = async (req, res, next) => {
       id: decodedToken.id
     });
     if (existingUser.length === 0) {
-      return res.status(403).send("token invalid");
+      return res.status(403).json({
+        message: "token invalid"
+      });
     }
   } catch (error) {
-    return res.status(403).send("token invalid");
+    return res.status(403).json({
+      message: "token invalid"
+    });
   }
   next();
 };
