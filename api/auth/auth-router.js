@@ -39,7 +39,9 @@ router.post('/register', async (req, res) => {
   });
   if (existingUser.length > 0) {
     console.log(username)
-    return res.status(400).end("username taken");
+    return res.status(400).json({
+      message: "username taken"
+  });
   }
   const hashedPassword = bcrypt.hashSync(password, 8);
   const newUser = await knex("users").insert({
