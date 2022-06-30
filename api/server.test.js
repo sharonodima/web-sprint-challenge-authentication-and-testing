@@ -2,6 +2,11 @@
 const request = require("supertest");
 const assert = require("assert");
 const server = require("./server");
+const knex = require("../data/dbConfig")
+
+beforeAll(async () => {
+  await knex.seed.run()
+})
 
 describe("Register", () => {
   test("Create new user", (done) => {
